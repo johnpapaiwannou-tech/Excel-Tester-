@@ -4,7 +4,7 @@ import re
 import datetime
 
 # Ρύθμιση σελίδας
-st.set_page_config(page_title="Engel & Volkers Excel Tester", page_icon="🏠", layout="wide")
+st.set_page_config(page_title="Engel & Volkers Rental Excel Tester", page_icon="🏠", layout="wide")
 
 # Background logo Engel & Volkers από το web
 st.markdown("""
@@ -16,7 +16,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.title("📊 Engel & Volkers Excel Tester")
+st.title("📊 Engel & Volkers Rental Excel Tester")
 st.write("Ανεβάστε το αρχείο σας (CSV ή Excel) για να ελέγξετε ποια deal είναι έτοιμα για το T-Box.")
 
 # Συνάρτηση ελέγχου αν ένα κείμενο περιέχει αριθμό (οφειλή)
