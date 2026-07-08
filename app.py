@@ -17,9 +17,11 @@ st.markdown("""
 <style>
 .stApp {
     background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Logo_EV_RGB_%C2%A9_Engel_%26_V%C3%B6lkers.png/1280px-Logo_EV_RGB_%C2%A9_Engel_%26_V%C3%B6lkers.png");
-    background-size: contain;
+    background-size: 180px auto;
     background-position: center top;
     background-repeat: no-repeat;
+    background-attachment: fixed;
+    padding-top: 220px;
 }
 </style>
 """, unsafe_allow_html=True)
