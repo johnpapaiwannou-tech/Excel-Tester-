@@ -16,7 +16,7 @@ render_calculator()
 st.markdown("""
 <style>
 .stApp {
-    background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Logo_EV_RGB_%C2%A9_Engel_%26_V%C3%B6lkers.png/1280px-Logo_EV_RGB_%C2%A9_Engel_%26_V%C3%B6lkers.png");
+    background-image: url("");
     background-size: 100%;
 }
 </style>
