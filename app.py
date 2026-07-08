@@ -9,25 +9,105 @@ try:
 except ImportError:
     excel_support = False
 
+st.set_page_config(
+    page_title="Engel & Volkers Rental Excel Tester",
+    page_icon="🏠",
+    layout="wide",
+)
+
 # Render the sidebar calculator from calculator.py
 render_calculator()
 
-# Background logo Engel & Volkers από το web
+# Modern app design and background styling
 st.markdown("""
 <style>
+body, .stApp, .main, .block-container {
+    background: #f4f6fa;
+    color: #111827;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.block-container {
+    padding: 30px 36px 36px;
+    max-width: 1080px;
+    margin: auto;
+}
+
 .stApp {
     background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Logo_EV_RGB_%C2%A9_Engel_%26_V%C3%B6lkers.png/1280px-Logo_EV_RGB_%C2%A9_Engel_%26_V%C3%B6lkers.png");
-    background-size: 180px auto;
-    background-position: center top;
+    background-size: 160px auto;
+    background-position: center 36px;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    min-height: 100vh;
     padding-top: 220px;
+}
+
+.stButton>button,
+.stFileUploader>div,
+.stTextInput>div>div>input,
+.stSelectbox>div>div>div {
+    border-radius: 16px !important;
+    border: 1px solid rgba(15, 23, 42, 0.12) !important;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.stButton>button {
+    background: linear-gradient(135deg, #0f172a, #334155) !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.9rem 1.4rem !important;
+}
+
+.stButton>button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 35px rgba(15, 23, 42, 0.16);
+}
+
+.stAlert, .stInfo, .stWarning, .stSuccess {
+    border-radius: 22px;
+    border: none;
+    padding: 22px 24px;
+    box-shadow: 0 18px 46px rgba(15, 23, 42, 0.08);
+}
+
+.css-1d391kg {
+    background: rgba(255, 255, 255, 0.95) !important;
+}
+
+h1, h2, h3, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+    font-weight: 700;
+}
+
+.stMarkdown p {
+    color: #475569;
+    line-height: 1.8;
+}
+
+.css-1z5f7gv {
+    background: rgba(255,255,255,0.98);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 24px 50px rgba(15, 23, 42, 0.08);
 }
 </style>
 """, unsafe_allow_html=True)
 
-st.title("📊 Engel & Volkers Rental Excel Tester")
-st.write("Ανεβάστε το αρχείο σας (CSV ή Excel) για να ελέγξετε ποια deal είναι έτοιμα για το T-Box.")
+with st.container():
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.title("📊 Engel & Volkers Rental Excel Tester")
+        st.markdown("Ανεβάστε το αρχείο σας (CSV ή Excel) για να ελέγξετε ποια deal είναι έτοιμα για το T-Box.")
+    with col2:
+        st.markdown(
+            """
+            <div style='background:#ffffffdd;border-radius:18px;padding:20px 22px;box-shadow:0 20px 45px rgba(15,23,42,0.08);'>
+                <h3 style='margin:0 0 12px;color:#0f172a;'>Γρήγορα βήματα</h3>
+                <p style='margin:0;color:#475569;'>1. Φόρτωσε αρχείο CSV ή XLSX<br>2. Έλεγξε τις εκκρεμότητες<br>3. Δες ποια deal είναι έτοιμα για T-Box</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
 # Συνάρτηση ελέγχου αν ένα κείμενο περιέχει αριθμό (οφειλή)
