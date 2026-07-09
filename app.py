@@ -162,6 +162,14 @@ li {
         0 0 15px rgba(255,255,255,0.15);
 
 }
+[data-testid="stSidebarCollapseButton"] span {
+    font-size: 0 !important;
+}
+
+[data-testid="stSidebarCollapseButton"] span::after {
+    content: "»";
+    font-size: 24px !important;
+}
 /* File uploader */
 [data-testid="stFileUploader"] {
     background: transparent !important;
