@@ -145,11 +145,23 @@ h1, h2, h3, h4, h5, h6,
 p,
 label,
 span,
-div,
 li {
-    color: white !important;
-    font-weight: 700 !important;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.9);
+
+    color: rgba(255,255,255,0.95) !important;
+
+    font-family: 
+        "Inter",
+        "Segoe UI",
+        sans-serif !important;
+
+    font-weight: 600 !important;
+
+    letter-spacing: 0.3px;
+
+    text-shadow:
+        0 2px 10px rgba(0,0,0,0.8),
+        0 0 15px rgba(255,255,255,0.15);
+
 }
 /* File uploader */
 [data-testid="stFileUploader"] {
