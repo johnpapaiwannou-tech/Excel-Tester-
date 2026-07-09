@@ -193,7 +193,7 @@ st.markdown("""
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-bottom:32px;">
   <div style="background:rgba(255,255,255,0.18);;border-radius:22px;padding:20px 22px;box-shadow:0 20px 48px rgba(15,23,42,0.06);">
     <h4 style="margin:0 0 10px;color:#0f172a;">Γρήγορα βήματα</h4>
-    <p style="margin:0;color:#475569;line-height:1.75;">1. Φόρτωστε CSV ή XLSX<br>2. Έλεγξτε εκκρεμότητες<br>3. Δείτε έτοιμα deal για T-Box</p>
+    <p style="margin:0;color:#475569;line-height:1.75;">1. Φόρτωστε CSV ή XLSX<br>2. Ελέγξτε εκκρεμότητες<br>3. Δείτε έτοιμα deal για T-Box</p>
   </div>
   <div style="background:rgba(255,255,255,0.18);;border-radius:22px;padding:20px 22px;box-shadow:0 20px 48px rgba(15,23,42,0.06);">
     <h4 style="margin:0 0 10px;color:#0f172a;">Σχετικά</h4>
