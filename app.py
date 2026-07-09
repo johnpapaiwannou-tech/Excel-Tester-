@@ -177,7 +177,7 @@ st.markdown(
     <div style="background: rgba(255,255,255,0.10); border-radius: 28px; padding: 32px 34px 34px; box-shadow: 0 30px 80px rgba(15,23,42,0.08); margin-bottom: 24px;">
         <div style="display:flex; flex-direction:column; flex-wrap:wrap; align-items:center; gap:24px; text-align:center;">
             <div style="max-width: 720px;">
-                <h1 style="margin:0;font-size:2.6rem;color:#0f172a;"> Engel & Volkers Rental Excel Tester</h1>
+                <h1 style="margin:0;font-size:2.6rem;color:#0f172a;"> Engel & Völkers Rental Excel Tester</h1>
                 <p style="margin:18px 0 0;font-size:1.05rem;line-height:1.75;color:#475569;">Ανεβάστε το αρχείο σας (CSV ή Excel) για να ελέγξετε ποια deal είναι έτοιμα για το T-Box.</p>
             </div>
             <div style="display:flex;align-items:center;justify-content:center;min-width:140px;">
@@ -193,7 +193,7 @@ st.markdown("""
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-bottom:32px;">
   <div style="background:rgba(255,255,255,0.18);;border-radius:22px;padding:20px 22px;box-shadow:0 20px 48px rgba(15,23,42,0.06);">
     <h4 style="margin:0 0 10px;color:#0f172a;">Γρήγορα βήματα</h4>
-    <p style="margin:0;color:#475569;line-height:1.75;">1. Φόρτωσε CSV ή XLSX<br>2. Έλεγξε εκκρεμότητες<br>3. Δες έτοιμα deal για T-Box</p>
+    <p style="margin:0;color:#475569;line-height:1.75;">1. Φόρτωστε CSV ή XLSX<br>2. Έλεγξτε εκκρεμότητες<br>3. Δείτε έτοιμα deal για T-Box</p>
   </div>
   <div style="background:rgba(255,255,255,0.18);;border-radius:22px;padding:20px 22px;box-shadow:0 20px 48px rgba(15,23,42,0.06);">
     <h4 style="margin:0 0 10px;color:#0f172a;">Σχετικά</h4>
