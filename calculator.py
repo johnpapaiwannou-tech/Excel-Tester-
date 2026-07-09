@@ -75,6 +75,47 @@ def render_calculator():
 
     st.sidebar.header("Αριθμομηχανή")
     st.sidebar.markdown(f"### `{st.session_state.calc_display or '0'}`")
+    st.sidebar.markdown(
+        """
+        <style>
+        [data-testid='stSidebar'] {
+            min-width: 320px !important;
+            max-width: 420px !important;
+        }
+        [data-testid='stSidebar'] .stButton,
+        [data-testid='stSidebar'] .stButton>button,
+        [data-testid='stSidebar'] button {
+            min-width: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            font-size: 0.92rem !important;
+            padding: 0.45rem 0.55rem !important;
+            white-space: nowrap !important;
+            box-sizing: border-box !important;
+        }
+        [data-testid='stSidebar'] .stButton {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            margin: 0 !important;
+        }
+        [data-testid='stSidebar'] .stButton>button {
+            width: 100% !important;
+        }
+        [data-testid='stSidebar'] .css-1lcbmhc.e1fqkh3o3 {
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 6px !important;
+        }
+        @media (max-width: 540px) {
+            [data-testid='stSidebar'] .css-1lcbmhc.e1fqkh3o3 {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
     def _get():
         return st.session_state.calc_display
