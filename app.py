@@ -129,7 +129,7 @@ section.main {
 }
 
 [data-testid='stSidebar'] {
-    background: rgba(255,255,255,0.25) !important;
+    background: rgba(255,255,255,0.15) !important;
     border-radius: 28px !important;
     box-shadow: 0 30px 60px rgba(15, 23, 42, 0.08) !important;
 }
@@ -139,7 +139,7 @@ section.main {
 }
 
 [data-testid='stSidebar'] h2 {
-    color: #0f172a !important;
+    color: #d4af37 !important;
 }
 h1, h2, h3, h4, h5, h6,
 p,
