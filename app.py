@@ -62,7 +62,7 @@ section.main {
 }
 
 .block-container {
-    background: rgba(20,20,20,0.35);
+    background: rgba(0,0,0,0.45);
     border-radius: 30px;
     border: 1px solid rgba(15,23,42,0.08);
     box-shadow: 0 30px 80px rgba(15, 23, 42, 0.08);
