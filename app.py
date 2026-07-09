@@ -141,28 +141,45 @@ section.main {
 [data-testid='stSidebar'] h2 {
     color: #d4af37 !important;
 }
-h1, h2, h3, h4, h5, h6,
-p,
-label,
-li {
+/* Modern typography */
+h1, h2, h3, h4, h5, h6 {
 
-    color: rgba(255,255,255,0.95) !important;
+    color: #ffffff !important;
 
-    font-family: 
+    font-family:
         "Inter",
         "Segoe UI",
         sans-serif !important;
 
-    font-weight: 600 !important;
+    font-weight: 700 !important;
 
-    letter-spacing: 0.3px;
+    letter-spacing: 0.4px;
 
     text-shadow:
-        0 2px 10px rgba(0,0,0,0.8),
-        0 0 15px rgba(255,255,255,0.35);
+        0 3px 12px rgba(0,0,0,0.85);
 
 }
-[data-testid="stSidebarCollapseButton"] span {
+
+
+p, label, li {
+
+    color: rgba(255,255,255,0.92) !important;
+
+    font-family:
+        "Inter",
+        "Segoe UI",
+        sans-serif !important;
+
+    font-weight: 500 !important;
+
+    letter-spacing: 0.2px;
+
+    line-height: 1.7;
+
+    text-shadow:
+        0 2px 8px rgba(0,0,0,0.8);
+
+}testid="stSidebarCollapseButton"] span {
     font-size: 0 !important;
 }
 
