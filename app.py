@@ -145,7 +145,7 @@ section.main {
 st.markdown(
     """
     <div style="background: rgba(255,255,255,0.96); border-radius: 28px; padding: 32px 34px 34px; box-shadow: 0 30px 80px rgba(15,23,42,0.08); margin-bottom: 24px;">
-        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:24px; align-items:center;">
+        <div style="display:flex; flex-direction:column; flex-wrap:wrap; align-items:center; gap:24px; text-align:center;">
             <div style="max-width: 720px;">
                 <h1 style="margin:0;font-size:2.6rem;color:#0f172a;">📊 Engel & Volkers Rental Excel Tester</h1>
                 <p style="margin:18px 0 0;font-size:1.05rem;line-height:1.75;color:#475569;">Ανεβάστε το αρχείο σας (CSV ή Excel) για να ελέγξετε ποια deal είναι έτοιμα για το T-Box.</p>
