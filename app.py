@@ -14,6 +14,7 @@ st.set_page_config(
     page_title="Engel & Völkers Rental Excel Tester",
     page_icon="🏠",
     layout="wide",
+    initial_sidebar_state="collapsed",
 )
 
 
@@ -41,14 +42,13 @@ section.main {
     padding: 0 !important;
 }
 
-.block-container {
-    background: rgba(0,0,0,0.45);
-    border-radius: 30px;
-    border: 1px solid rgba(15,23,42,0.08);
-    box-shadow: 0 30px 80px rgba(15, 23, 42, 0.08);
-    padding: 32px 36px 40px;
-    max-width: 1100px;
-    margin: auto;
+.block-container { background: rgba(0,0,0,0.45); 
+    border-radius: 30px; 
+    border: 1px solid rgba(15,23,42,0.08); 
+    box-shadow: 0 30px 80px rgba(15, 23, 42, 0.08); 
+    padding: 32px 36px 40px; 
+    max-width: 1100px; 
+    margin: auto; 
 }
 
 .stApp {
@@ -64,7 +64,6 @@ section.main {
     min-height: 100vh;
 }
 .stButton>button,
-.stFileUploader>div,
 .stTextInput>div>div>input,
 .stSelectbox>div>div>div {
     border-radius: 16px !important;
@@ -143,7 +142,7 @@ h1, h2, h3, h4, h5, h6 {
 
 p, label, li {
 
-    color: rgba(255,255,255,0.92) !important;
+    color: rgba(255,255,255,0.90) !important;
 
     font-family:
         "Inter",
@@ -158,21 +157,13 @@ p, label, li {
 
     text-shadow:
         0 2px 8px rgba(0,0,0,0.8);
-
-/* Sidebar button */
-
-[data-testid="stSidebarCollapseButton"] {
-
-    background: rgba(0,0,0,0.45) !important;
-
-    border-radius: 50% !important;
-
-    width:42px !important;
-
-    height:42px !important;
-
-    backdrop-filter:blur(10px);
-
+}
+/* Sidebar button */ [data-testid="stSidebarCollapseButton"] { 
+            background: rgba(0,0,0,0.45) !important; 
+            border-radius: 50% !important;
+             width:42px !important;
+             height:42px !important;
+             backdrop-filter:blur(10px); 
 }
 
 
@@ -191,41 +182,115 @@ p, label, li {
 
 }
 
-/* File uploader */
-[data-testid="stFileUploader"] {
+/* ==========================================
+   TRANSPARENT HEADER / TOOLBAR
+========================================== */
+
+header,
+[data-testid="stHeader"],
+[data-testid="stToolbar"] {
+
     background: transparent !important;
+
+    background-color: transparent !important;
+
+    box-shadow: none !important;
+
+    border: none !important;
+}
+
+/* ==========================================
+   FILE UPLOADER
+========================================== */
+
+[data-testid="stFileUploader"] {
+
+    background: transparent !important;
+
 }
 
 [data-testid="stFileUploaderDropzone"] {
 
-    background: rgba(0,0,0,0.45) !important;
+    background: rgba(255,255,255,0.05) !important;
 
-    border:
-    1px solid rgba(255,255,255,0.35) !important;
+    border: 1px solid rgba(255,255,255,0.30) !important;
 
-    border-radius:22px !important;
+    border-radius: 22px !important;
 
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(15px);
 
-    box-shadow:
-    0 20px 50px rgba(0,0,0,0.35);
+    -webkit-backdrop-filter: blur(15px);
 
-}
-[data-testid="stHeader"] {
-    background: transparent !important;
-}
-[data-testid="stToolbar"] {
-    background: transparent !important;
-}
-[data-testid="stHeader"] {
     box-shadow: none !important;
+
+    transition: .25s;
 }
+
+[data-testid="stFileUploaderDropzone"]:hover {
+
+    background: rgba(255,255,255,0.10) !important;
+
+    border: 1px solid rgba(255,255,255,0.50) !important;
+}
+
+[data-testid="stFileUploaderDropzone"] * {
+
+    color: white !important;
+}
+
+/* ==========================================
+   UPLOAD BUTTON
+========================================== */
+
+[data-testid="stFileUploader"] button,
+[data-testid="stFileUploaderDropzone"] button {
+
+    background: rgba(255,255,255,0.08) !important;
+
+    color: white !important;
+
+    border: 1px solid rgba(255,255,255,0.35) !important;
+
+    border-radius: 14px !important;
+
+    box-shadow: none !important;
+
+    font-weight: 700 !important;
+}
+
+[data-testid="stFileUploader"] button:hover,
+[data-testid="stFileUploaderDropzone"] button:hover {
+
+    background: rgba(255,255,255,0.16) !important;
+
+    color: white !important;
+
+    border: 1px solid rgba(255,255,255,0.60) !important;
+}
+
+/* Active */
+
+[data-testid="stFileUploaderDropzone"] button:active {
+
+    background: rgba(255,255,255,0.22) !important;
+}
+
+
+/* Focus */
+
+[data-testid="stFileUploaderDropzone"] button:focus {
+
+    outline: none !important;
+
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.25) !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown(
     """
-    <div style="background: rgba(255,255,255,0.10); border-radius: 28px; padding: 32px 34px 34px; box-shadow: 0 30px 80px rgba(15,23,42,0.08); margin-bottom: 24px;">
+    <div style="background: rgba(255,255,255,0.10);border-radius: 28px; padding: 32px 34px 34px; box-shadow: 0 30px 80px rgba(15,23,42,0.08); margin-bottom: 24px;">
         <div style="display:flex; flex-direction:column; flex-wrap:wrap; align-items:center; gap:24px; text-align:center;">
             <div style="max-width: 720px;">
                 <h1 style="margin:0;font-size:2.6rem;color:#0f172a;"> Engel & Völkers Rental Excel Tester</h1>
