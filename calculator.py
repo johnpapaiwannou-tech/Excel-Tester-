@@ -78,10 +78,6 @@ def render_calculator():
     st.sidebar.markdown(
         """
         <style>
-        [data-testid='stSidebar'] {
-            min-width: 320px !important;
-            max-width: 420px !important;
-        }
         [data-testid='stSidebar'] .stButton,
         [data-testid='stSidebar'] .stButton>button,
         [data-testid='stSidebar'] button {

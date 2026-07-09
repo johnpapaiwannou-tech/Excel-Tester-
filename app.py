@@ -26,6 +26,12 @@ components.html(
                     localStorage.removeItem(k);
                 }
             });
+            var collapsedKey = Object.keys(localStorage).find(function(k){
+                return k.toLowerCase().includes('sidebar') && k.toLowerCase().includes('collapsed');
+            });
+            if(collapsedKey){
+                localStorage.setItem(collapsedKey, 'true');
+            }
         }catch(e){console && console.log(e)}
         </script>""",
         height=0,
