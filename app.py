@@ -159,7 +159,7 @@ li {
 
     text-shadow:
         0 2px 10px rgba(0,0,0,0.8),
-        0 0 15px rgba(255,255,255,0.15);
+        0 0 15px rgba(255,255,255,0.35);
 
 }
 [data-testid="stSidebarCollapseButton"] span {
