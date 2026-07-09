@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import re
 from calculator import render_calculator
+import streamlit.components.v1 as components
 
 try:
     import openpyxl  # noqa: F401
@@ -13,6 +14,21 @@ st.set_page_config(
     page_title="Engel & Volkers Rental Excel Tester",
     page_icon="🏠",
     layout="wide",
+)
+
+# Clear sidebar state in localStorage (helps when sidebar remains stuck open)
+components.html(
+        """<script>
+        try{
+            Object.keys(localStorage).forEach(function(k){
+                var key = k.toLowerCase();
+                if(key.includes('sidebar') || key.includes('streamlit') || key.includes('collapsed')){
+                    localStorage.removeItem(k);
+                }
+            });
+        }catch(e){console && console.log(e)}
+        </script>""",
+        height=0,
 )
 
 # Render the sidebar calculator from calculator.py
