@@ -144,7 +144,6 @@ section.main {
 h1, h2, h3, h4, h5, h6,
 p,
 label,
-span,
 li {
 
     color: rgba(255,255,255,0.95) !important;
