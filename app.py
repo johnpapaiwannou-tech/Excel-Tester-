@@ -62,7 +62,7 @@ section.main {
 }
 
 .block-container {
-    background: rgba(255,255,255,0.95);
+    background: rgba(20,20,20,0.35);
     border-radius: 30px;
     border: 1px solid rgba(15,23,42,0.08);
     box-shadow: 0 30px 80px rgba(15, 23, 42, 0.08);
@@ -72,15 +72,17 @@ section.main {
 }
 
 .stApp {
-    background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Logo_EV_RGB_%C2%A9_Engel_%26_V%C3%B6lkers.png/1280px-Logo_EV_RGB_%C2%A9_Engel_%26_V%C3%B6lkers.png");
-    background-size: 180px auto;
-    background-position: center 40px;
-    background-repeat: no-repeat;
-    background-attachment: local;
-    min-height: 100vh;
-    padding-top: 200px;
-}
+    background-image:
+        linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)),
+        url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c");
 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+    min-height: 100vh;
+}
 .stButton>button,
 .stFileUploader>div,
 .stTextInput>div>div>input,
@@ -127,7 +129,7 @@ section.main {
 }
 
 [data-testid='stSidebar'] {
-    background: rgba(255,255,255,0.96) !important;
+    background: rgba(255,255,255,0.25) !important;
     border-radius: 28px !important;
     box-shadow: 0 30px 60px rgba(15, 23, 42, 0.08) !important;
 }
@@ -139,15 +141,43 @@ section.main {
 [data-testid='stSidebar'] h2 {
     color: #0f172a !important;
 }
+h1, h2, h3, h4, h5, h6,
+p,
+label,
+span,
+div,
+li {
+    color: white !important;
+    font-weight: 700 !important;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.9);
+}
+/* File uploader */
+[data-testid="stFileUploader"] {
+    background: transparent !important;
+}
+
+[data-testid="stFileUploaderDropzone"] {
+    background: rgba(255,255,255,0.25) !important;
+    border-radius: 20px;
+}
+[data-testid="stHeader"] {
+    background: transparent !important;
+}
+[data-testid="stToolbar"] {
+    background: transparent !important;
+}
+[data-testid="stHeader"] {
+    box-shadow: none !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown(
     """
-    <div style="background: rgba(255,255,255,0.96); border-radius: 28px; padding: 32px 34px 34px; box-shadow: 0 30px 80px rgba(15,23,42,0.08); margin-bottom: 24px;">
+    <div style="background: rgba(255,255,255,0.10); border-radius: 28px; padding: 32px 34px 34px; box-shadow: 0 30px 80px rgba(15,23,42,0.08); margin-bottom: 24px;">
         <div style="display:flex; flex-direction:column; flex-wrap:wrap; align-items:center; gap:24px; text-align:center;">
             <div style="max-width: 720px;">
-                <h1 style="margin:0;font-size:2.6rem;color:#0f172a;">📊 Engel & Volkers Rental Excel Tester</h1>
+                <h1 style="margin:0;font-size:2.6rem;color:#0f172a;"> Engel & Volkers Rental Excel Tester</h1>
                 <p style="margin:18px 0 0;font-size:1.05rem;line-height:1.75;color:#475569;">Ανεβάστε το αρχείο σας (CSV ή Excel) για να ελέγξετε ποια deal είναι έτοιμα για το T-Box.</p>
             </div>
             <div style="display:flex;align-items:center;justify-content:center;min-width:140px;">
@@ -161,11 +191,11 @@ st.markdown(
 
 st.markdown("""
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-bottom:32px;">
-  <div style="background:#ffffff;border-radius:22px;padding:20px 22px;box-shadow:0 20px 48px rgba(15,23,42,0.06);">
+  <div style="background:rgba(255,255,255,0.18);;border-radius:22px;padding:20px 22px;box-shadow:0 20px 48px rgba(15,23,42,0.06);">
     <h4 style="margin:0 0 10px;color:#0f172a;">Γρήγορα βήματα</h4>
     <p style="margin:0;color:#475569;line-height:1.75;">1. Φόρτωσε CSV ή XLSX<br>2. Έλεγξε εκκρεμότητες<br>3. Δες έτοιμα deal για T-Box</p>
   </div>
-  <div style="background:#ffffff;border-radius:22px;padding:20px 22px;box-shadow:0 20px 48px rgba(15,23,42,0.06);">
+  <div style="background:rgba(255,255,255,0.18);;border-radius:22px;padding:20px 22px;box-shadow:0 20px 48px rgba(15,23,42,0.06);">
     <h4 style="margin:0 0 10px;color:#0f172a;">Σχετικά</h4>
     <p style="margin:0;color:#475569;line-height:1.75;">Το εργαλείο αυτό αναλύει τις στήλες του αρχείου και εμφανίζει αν υπάρχουν εκκρεμότητες ή αν το deal είναι έτοιμο για T-Box.</p>
   </div>
