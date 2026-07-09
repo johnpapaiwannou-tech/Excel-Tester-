@@ -16,26 +16,6 @@ st.set_page_config(
     layout="wide",
 )
 
-# Clear sidebar state in localStorage (helps when sidebar remains stuck open)
-components.html(
-        """<script>
-        try{
-            Object.keys(localStorage).forEach(function(k){
-                var key = k.toLowerCase();
-                if(key.includes('sidebar') || key.includes('streamlit') || key.includes('collapsed')){
-                    localStorage.removeItem(k);
-                }
-            });
-            var collapsedKey = Object.keys(localStorage).find(function(k){
-                return k.toLowerCase().includes('sidebar') && k.toLowerCase().includes('collapsed');
-            });
-            if(collapsedKey){
-                localStorage.setItem(collapsedKey, 'true');
-            }
-        }catch(e){console && console.log(e)}
-        </script>""",
-        height=0,
-)
 
 # Render the sidebar calculator from calculator.py
 render_calculator()
@@ -179,22 +159,57 @@ p, label, li {
     text-shadow:
         0 2px 8px rgba(0,0,0,0.8);
 
-}testid="stSidebarCollapseButton"] span {
-    font-size: 0 !important;
+/* Sidebar button */
+
+[data-testid="stSidebarCollapseButton"] {
+
+    background: rgba(0,0,0,0.45) !important;
+
+    border-radius: 50% !important;
+
+    width:42px !important;
+
+    height:42px !important;
+
+    backdrop-filter:blur(10px);
+
 }
 
-[data-testid="stSidebarCollapseButton"] span::after {
-    content: "»";
-    font-size: 24px !important;
+
+/* Icon */
+
+[data-testid="stSidebarCollapseButton"] span {
+
+    color:#f5d58b !important;
+
+    font-size:28px !important;
+
+    font-weight:900 !important;
+
+    text-shadow:
+    0 2px 8px black;
+
 }
+
 /* File uploader */
 [data-testid="stFileUploader"] {
     background: transparent !important;
 }
 
 [data-testid="stFileUploaderDropzone"] {
-    background: rgba(255,255,255,0.25) !important;
-    border-radius: 20px;
+
+    background: rgba(0,0,0,0.45) !important;
+
+    border:
+    1px solid rgba(255,255,255,0.35) !important;
+
+    border-radius:22px !important;
+
+    backdrop-filter: blur(12px);
+
+    box-shadow:
+    0 20px 50px rgba(0,0,0,0.35);
+
 }
 [data-testid="stHeader"] {
     background: transparent !important;
