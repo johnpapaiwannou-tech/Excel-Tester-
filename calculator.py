@@ -122,7 +122,7 @@ def evaluate_expression(raw_expression):
 
 
 
-@fragment
+
 def render_calculator():
 
     if "calc_display" not in st.session_state:
