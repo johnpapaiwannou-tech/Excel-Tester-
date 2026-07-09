@@ -11,7 +11,7 @@ except ImportError:
     excel_support = False
 
 st.set_page_config(
-    page_title="Engel & Volkers Rental Excel Tester",
+    page_title="Engel & Völkers Rental Excel Tester",
     page_icon="🏠",
     layout="wide",
 )
