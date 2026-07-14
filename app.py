@@ -321,15 +321,27 @@ st.markdown("""
 st.markdown("---")
 
 
+# Pattern που αναγνωρίζει ποσά σε ευρωπαϊκό (1.488,00) ή αμερικανικό (1,488.00)
+# format, αλλά και απλούς ακέραιους (π.χ. 500 ή 12345) χωρίς να τα σπάει.
+AMOUNT_PATTERN = (
+    r'\d{4,}(?:[.,]\d+)?'                      # ακέραιοι > 999 (π.χ. 12345)
+    r'|\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{1,2})?'  # 1.488,00 / 1,488.00 / 500
+    r'|\d+(?:[.,]\d+)?'                        # εφεδρικό (π.χ. 12.5)
+)
+
+
 # Συνάρτηση ελέγχου αν ένα κείμενο περιέχει αριθμό (οφειλή)
 def extract_debt(text):
     if pd.isna(text):
         return None
     text_str = str(text).strip()
-    # Ψάχνουμε αν υπάρχει αριθμός στο κείμενο (π.χ. 500, 1.488, 356,40)
     # Εξαιρούμε ημερομηνίες μορφής DD/MM/YYYY αν τυχόν υπάρχουν μέσα στο όνομα
     clean_text = re.sub(r'\b\d{2}/\d{2}/\d{4}\b', '', text_str)
-    numbers = re.findall(r'\d+(?:[.,]\d+)?', clean_text)
+    # Προτίμηση: αριθμός αμέσως μετά το € (π.χ. "€1.488,00")
+    euro_matches = re.findall(r'€\s*(' + AMOUNT_PATTERN + r')', clean_text)
+    if euro_matches:
+        return euro_matches[-1]
+    numbers = re.findall(AMOUNT_PATTERN, clean_text)
     if numbers:
         return numbers[-1]  # Επιστρέφει τον τελευταίο αριθμό που βρήκε ως οφειλή
     return None
@@ -378,9 +390,9 @@ if uploaded_file is not None:
                 debt_c = extract_debt(col_c)
                 debt_e = extract_debt(col_e)
 
-                # Καθαρισμός ονομάτων για τα μηνύματα
-                name_c = re.sub(r'\d+(?:[.,]\d+)?.*', '', str(col_c)).replace('-', '').strip() if not pd.isna(col_c) else ""
-                name_e = re.sub(r'\d+(?:[.,]\d+)?.*', '', str(col_e)).replace('-', '').strip() if not pd.isna(col_e) else ""
+                # Καθαρισμός ονομάτων για τα μηνύματα (αφαιρούμε ολόκληρο το ποσό + €)
+                name_c = re.sub(r'€?\s*' + AMOUNT_PATTERN + r'.*', '', str(col_c)).replace('-', '').strip() if not pd.isna(col_c) else ""
+                name_e = re.sub(r'€?\s*' + AMOUNT_PATTERN + r'.*', '', str(col_e)).replace('-', '').strip() if not pd.isna(col_e) else ""
 
                 row_has_debt = False
 
