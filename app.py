@@ -391,8 +391,8 @@ if uploaded_file is not None:
                 debt_e = extract_debt(col_e)
 
                 # Καθαρισμός ονομάτων για τα μηνύματα (αφαιρούμε ολόκληρο το ποσό + €)
-                name_c = re.sub(r'€?\s*' + AMOUNT_PATTERN + r'.*', '', str(col_c)).replace('-', '').strip() if not pd.isna(col_c) else ""
-                name_e = re.sub(r'€?\s*' + AMOUNT_PATTERN + r'.*', '', str(col_e)).replace('-', '').strip() if not pd.isna(col_e) else ""
+                name_c = re.sub(r'€?\s*(?:' + AMOUNT_PATTERN + r').*', '', str(col_c)).replace('-', '').strip() if not pd.isna(col_c) else ""
+                name_e = re.sub(r'€?\s*(?:' + AMOUNT_PATTERN + r').*', '', str(col_e)).replace('-', '').strip() if not pd.isna(col_e) else ""
 
                 row_has_debt = False
 
