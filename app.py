@@ -1,6 +1,11 @@
 import streamlit as st
 import pandas as pd
 import re
+import os
+import json
+import urllib.request
+import urllib.error
+from datetime import datetime
 from calculator import render_calculator
 import streamlit.components.v1 as components
 
@@ -199,6 +204,19 @@ header,
     border: none !important;
 }
 
+/* Glass/blur όπως το Επιλέξτε αρχείο, με πολύ πιο απαλό blur για το hero */
+.ev-hero-blur {
+    background: rgba(15, 23, 42, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.30) !important;
+    border-radius: 28px !important;
+    padding: 32px 34px 34px;
+    margin-bottom: 28px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    box-shadow: none !important;
+    transition: .25s;
+}
+
 /* ==========================================
    FILE UPLOADER
 ========================================== */
@@ -211,7 +229,7 @@ header,
 
 [data-testid="stFileUploaderDropzone"] {
 
-    background: rgba(255,255,255,0.05) !important;
+    background: rgba(15, 23, 42, 0.60) !important;
 
     border: 1px solid rgba(255,255,255,0.30) !important;
 
@@ -228,7 +246,7 @@ header,
 
 [data-testid="stFileUploaderDropzone"]:hover {
 
-    background: rgba(255,255,255,0.10) !important;
+    background: rgba(15, 23, 42, 0.75) !important;
 
     border: 1px solid rgba(255,255,255,0.50) !important;
 }
@@ -236,6 +254,43 @@ header,
 [data-testid="stFileUploaderDropzone"] * {
 
     color: white !important;
+}
+
+/* Το κουτί/όνομα του επιλεγμένου αρχείου (file chip) -> σκούρο φόντο + λευκά γράμματα
+   (καλύπτει νέα έκδοση: .stFileUploaderFile / stFileChip μέσα στο dropzone,
+   και παλιά έκδοση: stFileUploaderFileName) */
+[data-testid="stFileUploaderDropzone"] .stFileUploaderFile,
+[data-testid="stFileUploaderDropzone"] [data-testid="stFileChip"],
+[data-testid="stFileUploaderFileName"] {
+    background: rgba(15, 23, 42, 0.60) !important;
+    border: 1px solid rgba(255, 255, 255, 0.30) !important;
+    border-radius: 14px !important;
+    color: #ffffff !important;
+}
+
+[data-testid="stFileUploaderDropzone"] .stFileUploaderFile *,
+[data-testid="stFileUploaderDropzone"] [data-testid="stFileChip"] *,
+[data-testid="stFileUploaderFileName"] *,
+[data-testid="stFileUploaderDropzone"] .uploadedFileName,
+[data-testid="stFileUploader"] small {
+    color: #ffffff !important;
+}
+
+/* Κοινό στυλ "θολωμένου" κάρτας (ίδιο με το dropzone του Επιλέξτε αρχείο) */
+.ev-blur-card {
+    background: rgba(15, 23, 42, 0.60) !important;
+    border: 1px solid rgba(255, 255, 255, 0.30) !important;
+    border-radius: 22px !important;
+    padding: 20px 22px;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: none !important;
+    transition: .25s;
+}
+
+.ev-blur-card:hover {
+    background: rgba(15, 23, 42, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.50) !important;
 }
 
 /* ==========================================
@@ -290,11 +345,11 @@ header,
 
 st.markdown(
     """
-    <div style="background: rgba(255,255,255,0.10);border-radius: 28px; padding: 32px 34px 34px; box-shadow: 0 30px 80px rgba(15,23,42,0.08); margin-bottom: 24px;">
+    <div class="ev-hero-blur">
         <div style="display:flex; flex-direction:column; flex-wrap:wrap; align-items:center; gap:24px; text-align:center;">
             <div style="max-width: 720px;">
-                <h1 style="margin:0;font-size:2.6rem;color:#0f172a;"> Engel & Völkers Rental Excel Tester</h1>
-                <p style="margin:18px 0 0;font-size:1.05rem;line-height:1.75;color:#475569;">Ανεβάστε το αρχείο σας (CSV ή Excel) για να ελέγξετε ποια deal είναι έτοιμα για το T-Box.</p>
+                <h1 style="margin:0;font-size:2.6rem;color:#ffffff;"> Engel & Völkers Rental Excel Tester</h1>
+                <p style="margin:18px 0 0;font-size:1.05rem;line-height:1.75;color:#ffffff;">Ανεβάστε το αρχείο σας (CSV ή Excel) για να ελέγξετε ποια deal είναι έτοιμα για το T-Box.</p>
             </div>
             <div style="display:flex;align-items:center;justify-content:center;min-width:140px;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Logo_EV_RGB_%C2%A9_Engel_%26_V%C3%B6lkers.png/1280px-Logo_EV_RGB_%C2%A9_Engel_%26_V%C3%B6lkers.png" style="height:100px;object-fit:contain;opacity:0.96;border-radius:18px;" />
@@ -306,14 +361,14 @@ st.markdown(
 )
 
 st.markdown("""
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-bottom:32px;">
-  <div style="background:rgba(255,255,255,0.18);;border-radius:22px;padding:20px 22px;box-shadow:0 20px 48px rgba(15,23,42,0.06);">
-    <h4 style="margin:0 0 10px;color:#0f172a;">Γρήγορα βήματα</h4>
-    <p style="margin:0;color:#475569;line-height:1.75;">1. Φόρτωστε CSV ή XLSX<br>2. Ελέγξτε εκκρεμότητες<br>3. Δείτε έτοιμα deal για T-Box</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:28px;margin-bottom:32px;">
+  <div class="ev-blur-card">
+    <h4 style="margin:0 0 10px;color:#ffffff;">Γρήγορα βήματα</h4>
+    <p style="margin:0;color:#ffffff;line-height:1.75;">1. Φόρτωστε CSV ή XLSX<br>2. Ελέγξτε εκκρεμότητες<br>3. Δείτε έτοιμα deal για T-Box</p>
   </div>
-  <div style="background:rgba(255,255,255,0.18);;border-radius:22px;padding:20px 22px;box-shadow:0 20px 48px rgba(15,23,42,0.06);">
-    <h4 style="margin:0 0 10px;color:#0f172a;">Σχετικά</h4>
-    <p style="margin:0;color:#475569;line-height:1.75;">Το εργαλείο αυτό αναλύει τις στήλες του αρχείου και εμφανίζει αν υπάρχουν εκκρεμότητες ή αν το deal είναι έτοιμο για T-Box.</p>
+  <div class="ev-blur-card">
+    <h4 style="margin:0 0 10px;color:#ffffff;">Σχετικά</h4>
+    <p style="margin:0;color:#ffffff;line-height:1.75;">Το εργαλείο αυτό αναλύει τις στήλες του αρχείου και εμφανίζει αν υπάρχουν εκκρεμότητες ή αν το deal είναι έτοιμο για T-Box.</p>
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -347,6 +402,41 @@ def extract_debt(text):
     return None
 
 
+# Μετατρέπει ένα κείμενο σε ημερομηνία (αν το βρει), αλλιώς None
+def parse_date(text):
+    # Excel serial number (π.χ. 46174 -> 01/07/2026), περιλαμβάνει numpy τύπους
+    if isinstance(text, (int, float, pd.Timestamp)) and not isinstance(text, bool):
+        try:
+            if isinstance(text, pd.Timestamp):
+                return text.to_pydatetime()
+            return datetime(1899, 12, 30) + pd.Timedelta(days=float(text))
+        except Exception:
+            return None
+    if pd.isna(text):
+        return None
+    s = str(text).strip()
+    if not s or s.lower() == "nan":
+        return None
+    # Γνωστές μορφές (πρώτα το ελληνικό ΗΗ/ΜΜ/ΕΕΕΕ)
+    for fmt in ("%d/%m/%Y", "%d-%m-%Y", "%Y-%m-%d", "%d.%m.%Y"):
+        try:
+            return datetime.strptime(s, fmt)
+        except ValueError:
+            continue
+    # Fallback: σταθερά ΗΗ/ΜΜ/ΕΕΕΕ (ελληνικό format)
+    m = re.search(r'(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})', s)
+    if m:
+        d, mo, y = m.groups()
+        if len(y) == 2:
+            y = "20" + y
+        try:
+            return datetime.strptime(f"{int(d):02d}/{int(mo):02d}/{y}", "%d/%m/%Y")
+        except ValueError:
+            return None
+    return None
+
+
+
 # Upload Αρχείου
 uploaded_file = st.file_uploader("Επιλέξτε αρχείο", type=["csv", "xlsx"])
 
@@ -377,6 +467,7 @@ if uploaded_file is not None:
         else:
             ready_deals = []
             pending_messages = []
+            date_diffs = []
 
             for index, row in df.iterrows():
                 # On-the-fly χαρτογράφηση στηλών με βάση τη θέση τους (0=A, 1=B, 2=C, 3=D, 4=E, 5=F)
@@ -408,6 +499,11 @@ if uploaded_file is not None:
                 has_amount_d = not pd.isna(col_d) and str(col_d).strip() != ""
                 has_date_f = pd.notna(row.iloc[5]) and col_f != "" and col_f.lower() != "nan"
                 contains_date = bool(re.search(r'\d{2}[/-]\d{2}[/-]\d{4}', col_f))
+                # Συλλογή διαφοράς ημερών (1η ημερομηνία -> ημερομηνία πληρωμής)
+                date_a = parse_date(row.iloc[0])
+                date_f = parse_date(col_f)
+                if date_a and date_f:
+                    date_diffs.append(abs((date_f - date_a).days))
                 if not row_has_debt and has_amount_d and has_date_f:
                     ready_deals.append(f"🟢 Είναι έτοιμο το deal (**{col_b}**) να μπεί T-Box, έχουν πληρώσει και οι δύο πλευρές")
                 elif not row_has_debt:
@@ -431,6 +527,8 @@ if uploaded_file is not None:
                     st.write(msg)
             else:
                 st.success("Δεν βρέθηκαν εκκρεμότητες!")
+            
+        
 
     except Exception as e:
         st.error(f"Προέκυψε σφάλμα κατά την επεξεργασία: {e}")
