@@ -3,6 +3,7 @@ import pandas as pd
 import re
 import os
 import json
+import statistics
 import urllib.request
 import urllib.error
 from datetime import datetime
@@ -467,7 +468,7 @@ if uploaded_file is not None:
         else:
             ready_deals = []
             pending_messages = []
-            date_diffs = []
+            date_diffs = []  # λίστα από (κωδικός deal, διαφορά ημερών) ανάμεσα στην 1η (στήλη Α) και 2η (στήλη F) ημερομηνία
 
             for index, row in df.iterrows():
                 # On-the-fly χαρτογράφηση στηλών με βάση τη θέση τους (0=A, 1=B, 2=C, 3=D, 4=E, 5=F)
@@ -499,11 +500,15 @@ if uploaded_file is not None:
                 has_amount_d = not pd.isna(col_d) and str(col_d).strip() != ""
                 has_date_f = pd.notna(row.iloc[5]) and col_f != "" and col_f.lower() != "nan"
                 contains_date = bool(re.search(r'\d{2}[/-]\d{2}[/-]\d{4}', col_f))
-                # Συλλογή διαφοράς ημερών (1η ημερομηνία -> ημερομηνία πληρωμής)
+
+                # Συλλογή διαφοράς ημερών: 1η ημερομηνία (στήλη Α, αριστερά) -> 2η ημερομηνία (στήλη F, δεξιά)
+                # δηλ. η διαφορά ημερών ανάμεσα στην ημερομηνία του πρώτου πελάτη και του δεύτερου.
                 date_a = parse_date(row.iloc[0])
                 date_f = parse_date(col_f)
                 if date_a and date_f:
-                    date_diffs.append(abs((date_f - date_a).days))
+                    diff_days = abs((date_f - date_a).days)
+                    date_diffs.append((col_b, diff_days))
+
                 if not row_has_debt and has_amount_d and has_date_f:
                     ready_deals.append(f"🟢 Είναι έτοιμο το deal (**{col_b}**) να μπεί T-Box, έχουν πληρώσει και οι δύο πλευρές")
                 elif not row_has_debt:
@@ -527,8 +532,30 @@ if uploaded_file is not None:
                     st.write(msg)
             else:
                 st.success("Δεν βρέθηκαν εκκρεμότητες!")
-            
-        
+
+            # --- ΝΕΟ: ΣΤΑΤΙΣΤΙΚΑ ΔΙΑΦΟΡΑΣ ΗΜΕΡΩΝ (1ος vs 2ος πελάτης) ---
+            st.markdown("---")
+            st.subheader("📊 Στατιστικά Διαφοράς Ημερών (1ος vs 2ος πελάτης)")
+
+            if date_diffs:
+                diffs_only = [d for _, d in date_diffs]
+                diffs_df = pd.DataFrame(date_diffs, columns=["Κωδικός Deal", "Διαφορά Ημερών"])
+
+                col1, col2, col3, col4, col5 = st.columns(5)
+                col1.metric("Πλήθος Deals", len(diffs_only))
+                col2.metric("Μέση Διαφορά", f"{statistics.mean(diffs_only):.1f} ημ.")
+                col3.metric("Διάμεσος", f"{statistics.median(diffs_only):.1f} ημ.")
+                col4.metric("Ελάχιστη", f"{min(diffs_only)} ημ.")
+                col5.metric("Μέγιστη", f"{max(diffs_only)} ημ.")
+
+                with st.expander("👁️ Δείτε αναλυτικά τη διαφορά ημερών ανά deal"):
+                    st.dataframe(
+                        diffs_df.sort_values("Διαφορά Ημερών", ascending=False),
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+            else:
+                st.info("Δεν βρέθηκαν αρκετές ημερομηνίες (στήλη Α & στήλη F) ώστε να υπολογιστούν στατιστικά διαφοράς ημερών.")
 
     except Exception as e:
         st.error(f"Προέκυψε σφάλμα κατά την επεξεργασία: {e}")
