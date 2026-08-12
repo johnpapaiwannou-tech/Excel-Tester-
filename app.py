@@ -429,6 +429,9 @@ st.markdown("""
 st.markdown("---")
 
 
+DELAY_LIMIT_DAYS = 15
+
+
 # Pattern που αναγνωρίζει ποσά σε ευρωπαϊκό (1.488,00) ή αμερικανικό (1,488.00)
 # format, αλλά και απλούς ακέραιους (π.χ. 500 ή 12345) χωρίς να τα σπάει.
 AMOUNT_PATTERN = (
@@ -653,6 +656,8 @@ if uploaded_file is not None:
 
             if date_diffs:
                 diffs_only = [d for _, _, _, d in date_diffs]
+                delayed_deals = [item for item in date_diffs if abs(item[3]) > DELAY_LIMIT_DAYS]
+                within_limit_deals = [item for item in date_diffs if abs(item[3]) <= DELAY_LIMIT_DAYS]
                 diffs_df = pd.DataFrame(
                     date_diffs,
                     columns=[
@@ -662,12 +667,45 @@ if uploaded_file is not None:
                         "Διαφορά πληρωμής (ημέρες)",
                     ],
                 )
+                diffs_df["Απόσταση πληρωμών (ημέρες)"] = diffs_df[
+                    "Διαφορά πληρωμής (ημέρες)"
+                ].abs()
+                diffs_df[f"Έλεγχος ορίου {DELAY_LIMIT_DAYS} ημερών"] = diffs_df[
+                    "Απόσταση πληρωμών (ημέρες)"
+                ].apply(
+                    lambda days: "🔴 Εκτός ορίου" if days > DELAY_LIMIT_DAYS else "🟢 Εντός ορίου"
+                )
 
                 st.caption(
                     "Η διαφορά υπολογίζεται: 2η πληρωμή − 1η πληρωμή. "
                     "Θετικός αριθμός = ο 2ος πελάτης πλήρωσε αργότερα, "
-                    "αρνητικός = πλήρωσε νωρίτερα."
+                    "αρνητικός = πλήρωσε νωρίτερα. "
+                    f"Ως καθυστέρηση επισημαίνεται απόσταση πληρωμών πάνω από {DELAY_LIMIT_DAYS} ημέρες."
                 )
+
+                limit_col1, limit_col2 = st.columns(2)
+                limit_col1.metric(
+                    f"Εντός ορίου (≤ {DELAY_LIMIT_DAYS} ημ.)",
+                    len(within_limit_deals),
+                )
+                limit_col2.metric(
+                    f"Εκτός ορίου (> {DELAY_LIMIT_DAYS} ημ.)",
+                    len(delayed_deals),
+                )
+
+                if delayed_deals:
+                    st.subheader(f"🔴 Deals πάνω από το όριο των {DELAY_LIMIT_DAYS} ημερών")
+                    for deal_code, _, _, diff_days in delayed_deals:
+                        distance_days = abs(diff_days)
+                        st.error(
+                            f"Deal **{deal_code}**: απόσταση πληρωμών {distance_days} ημέρες "
+                            f"— υπέρβαση ορίου κατά {distance_days - DELAY_LIMIT_DAYS} ημέρες."
+                        )
+                else:
+                    st.success(
+                        f"Όλα τα deals με δύο ημερομηνίες πληρωμής είναι εντός του ορίου "
+                        f"των {DELAY_LIMIT_DAYS} ημερών."
+                    )
 
                 col1, col2, col3, col4, col5 = st.columns(5)
                 col1.metric("Πλήθος Deals", len(diffs_only))
@@ -678,7 +716,7 @@ if uploaded_file is not None:
 
                 with st.expander("👁️ Δείτε αναλυτικά τη διαφορά ημερών ανά deal"):
                     st.dataframe(
-                        diffs_df.sort_values("Διαφορά πληρωμής (ημέρες)", ascending=False),
+                        diffs_df.sort_values("Απόσταση πληρωμών (ημέρες)", ascending=False),
                         use_container_width=True,
                         hide_index=True,
                     )
