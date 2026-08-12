@@ -430,6 +430,7 @@ st.markdown("---")
 
 
 DELAY_LIMIT_DAYS = 15
+DELAY_WARNING_DAYS = 10
 
 
 # Pattern που αναγνωρίζει ποσά σε ευρωπαϊκό (1.488,00) ή αμερικανικό (1,488.00)
@@ -578,6 +579,8 @@ if uploaded_file is not None:
             ready_deals = []
             pending_messages = []
             date_diffs = []  # (κωδικός, 1η πληρωμή, 2η πληρωμή, πραγματική διαφορά)
+            deal_date_rows = []  # Όλα τα deals για τον πίνακα παρακολούθησης
+            today = datetime.now().date()
 
             for row_position, (_, row) in enumerate(df.iterrows()):
                 # On-the-fly χαρτογράφηση στηλών με βάση τη θέση τους (0=A, 1=B, 2=C, 3=D, 4=E, 5=F)
@@ -619,10 +622,45 @@ if uploaded_file is not None:
                 )
                 date_a = parse_excel_date_as_greek(row.iloc[0], format_a)
                 date_f = parse_excel_date_as_greek(row.iloc[5], format_f)
+                contains_date = date_f is not None
                 if date_a and date_f:
                     # Θετικό: ο 2ος πελάτης πλήρωσε αργότερα. Αρνητικό: πλήρωσε νωρίτερα.
                     diff_days = (date_f.date() - date_a.date()).days
                     date_diffs.append((col_b, date_a.date(), date_f.date(), diff_days))
+                    deal_date_rows.append(
+                        (
+                            col_b,
+                            date_a.date(),
+                            date_f.date(),
+                            diff_days,
+                            abs(diff_days),
+                            "Ολοκληρωμένο — πληρωμή και από τις δύο πλευρές",
+                        )
+                    )
+                elif date_a:
+                    # Όσο δεν υπάρχει 2η πληρωμή, μετράμε την αναμονή έως σήμερα.
+                    waiting_days = max((today - date_a.date()).days, 0)
+                    deal_date_rows.append(
+                        (
+                            col_b,
+                            date_a.date(),
+                            None,
+                            None,
+                            waiting_days,
+                            "Αναμονή 2ης πληρωμής",
+                        )
+                    )
+                else:
+                    deal_date_rows.append(
+                        (
+                            col_b,
+                            None,
+                            date_f.date() if date_f else None,
+                            None,
+                            None,
+                            "Δεν υπάρχει έγκυρη ημερομηνία στη στήλη Α",
+                        )
+                    )
 
                 if not row_has_debt and has_amount_d and has_date_f:
                     ready_deals.append(f"🟢 Είναι έτοιμο το deal (**{col_b}**) να μπεί T-Box, έχουν πληρώσει και οι δύο πλευρές")
@@ -658,29 +696,13 @@ if uploaded_file is not None:
                 diffs_only = [d for _, _, _, d in date_diffs]
                 delayed_deals = [item for item in date_diffs if abs(item[3]) > DELAY_LIMIT_DAYS]
                 within_limit_deals = [item for item in date_diffs if abs(item[3]) <= DELAY_LIMIT_DAYS]
-                diffs_df = pd.DataFrame(
-                    date_diffs,
-                    columns=[
-                        "Κωδικός Deal",
-                        "Πληρωμή 1ου πελάτη",
-                        "Πληρωμή 2ου πελάτη",
-                        "Διαφορά πληρωμής (ημέρες)",
-                    ],
-                )
-                diffs_df["Απόσταση πληρωμών (ημέρες)"] = diffs_df[
-                    "Διαφορά πληρωμής (ημέρες)"
-                ].abs()
-                diffs_df[f"Έλεγχος ορίου {DELAY_LIMIT_DAYS} ημερών"] = diffs_df[
-                    "Απόσταση πληρωμών (ημέρες)"
-                ].apply(
-                    lambda days: "🔴 Εκτός ορίου" if days > DELAY_LIMIT_DAYS else "🟢 Εντός ορίου"
-                )
 
                 st.caption(
                     "Η διαφορά υπολογίζεται: 2η πληρωμή − 1η πληρωμή. "
                     "Θετικός αριθμός = ο 2ος πελάτης πλήρωσε αργότερα, "
                     "αρνητικός = πλήρωσε νωρίτερα. "
-                    f"Ως καθυστέρηση επισημαίνεται απόσταση πληρωμών πάνω από {DELAY_LIMIT_DAYS} ημέρες."
+                    "Στα παρακάτω στατιστικά συμμετέχουν μόνο τα deals που έχουν ημερομηνία "
+                    "και στις δύο στήλες Α και F."
                 )
 
                 limit_col1, limit_col2 = st.columns(2)
@@ -713,15 +735,74 @@ if uploaded_file is not None:
                 col3.metric("Διάμεσος", f"{statistics.median(diffs_only):.1f} ημ.")
                 col4.metric("Ελάχιστη", f"{min(diffs_only)} ημ.")
                 col5.metric("Μέγιστη", f"{max(diffs_only)} ημ.")
-
-                with st.expander("👁️ Δείτε αναλυτικά τη διαφορά ημερών ανά deal"):
-                    st.dataframe(
-                        diffs_df.sort_values("Απόσταση πληρωμών (ημέρες)", ascending=False),
-                        use_container_width=True,
-                        hide_index=True,
-                    )
             else:
-                st.info("Δεν βρέθηκαν αρκετές ημερομηνίες (στήλη Α & στήλη F) ώστε να υπολογιστούν στατιστικά διαφοράς ημερών.")
+                st.info(
+                    "Δεν υπάρχουν ολοκληρωμένα deals με ημερομηνία στις στήλες Α και F. "
+                    "Τα deals που περιμένουν 2η πληρωμή εμφανίζονται μόνο στον παρακάτω πίνακα."
+                )
+
+            st.subheader("📋 Παρακολούθηση όλων των deals")
+            st.caption(
+                f"Για deal χωρίς ημερομηνία στη στήλη F, οι ημέρες υπολογίζονται από τη στήλη Α "
+                f"μέχρι σήμερα ({today.strftime('%d/%m/%Y')}). Αυτά τα deals δεν συμμετέχουν "
+                "στον μέσο όρο, στη διάμεσο, στο ελάχιστο ή στο μέγιστο. "
+                "🟢 0–9 ημέρες · 🟠 10–15 ημέρες · 🔴 Πάνω από 15 ημέρες"
+            )
+
+            if deal_date_rows:
+                monitoring_df = pd.DataFrame(
+                    deal_date_rows,
+                    columns=[
+                        "Κωδικός Deal",
+                        "Ημερομηνία στήλης Α",
+                        "Ημερομηνία στήλης F",
+                        "Διαφορά Α → F (ημέρες)",
+                        "Ημέρες πληρωμής / αναμονής",
+                        "Κατάσταση πληρωμής",
+                    ],
+                )
+
+                def limit_label(days):
+                    if pd.isna(days):
+                        return "⚪ Δεν υπολογίζεται"
+                    if days > DELAY_LIMIT_DAYS:
+                        return "🔴 Εκτός ορίου"
+                    if days >= DELAY_WARNING_DAYS:
+                        return "🟠 Πλησιάζει το όριο"
+                    return "🟢 Εντός ορίου"
+
+                monitoring_df[f"Έλεγχος ορίου {DELAY_LIMIT_DAYS} ημερών"] = monitoring_df[
+                    "Ημέρες πληρωμής / αναμονής"
+                ].apply(limit_label)
+                monitoring_df = monitoring_df.sort_values(
+                    "Ημέρες πληρωμής / αναμονής",
+                    ascending=False,
+                    na_position="last",
+                )
+
+                def highlight_delay_row(row):
+                    distance_days = row["Ημέρες πληρωμής / αναμονής"]
+                    if pd.isna(distance_days):
+                        style = "background-color: #475569; color: #ffffff; font-weight: 700;"
+                    elif distance_days > DELAY_LIMIT_DAYS:
+                        style = "background-color: #7f1d1d; color: #ffffff; font-weight: 700;"
+                    elif distance_days >= DELAY_WARNING_DAYS:
+                        style = "background-color: #9a5b13; color: #ffffff; font-weight: 700;"
+                    else:
+                        style = "background-color: #166534; color: #ffffff; font-weight: 700;"
+                    return [style] * len(row)
+
+                styled_monitoring_df = monitoring_df.style.apply(
+                    highlight_delay_row,
+                    axis=1,
+                )
+                st.dataframe(
+                    styled_monitoring_df,
+                    use_container_width=True,
+                    hide_index=True,
+                )
+            else:
+                st.info("Δεν βρέθηκαν deals για εμφάνιση στον πίνακα.")
 
     except Exception as e:
         st.error(f"Προέκυψε σφάλμα κατά την επεξεργασία: {e}")
