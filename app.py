@@ -485,13 +485,21 @@ if uploaded_file is not None:
                 raise RuntimeError(
                     "Για να διαβάσετε .xlsx αρχείο χρειάζεται να εγκαταστήσετε το openpyxl: pip install openpyxl"
                 )
-            df = pd.read_excel(uploaded_file, engine='openpyxl')
+
+            uploaded_file.seek(0)
+            excel_file = pd.ExcelFile(uploaded_file, engine='openpyxl')
+            selected_sheet = st.selectbox(
+                "Επιλέξτε το sheet που θέλετε να επεξεργαστείτε",
+                options=excel_file.sheet_names,
+                key=f"sheet_selector_{uploaded_file.name}",
+            )
+            df = pd.read_excel(excel_file, sheet_name=selected_sheet)
 
             # Κρατάμε το format των κελιών Α και F, γιατί το pandas επιστρέφει
             # μόνο την εσωτερική ημερομηνία και όχι τον τρόπο που φαίνεται στο Excel.
             uploaded_file.seek(0)
             workbook = openpyxl.load_workbook(uploaded_file, data_only=True, read_only=True)
-            worksheet = workbook[workbook.sheetnames[0]]
+            worksheet = workbook[selected_sheet]
             excel_date_formats = [
                 (
                     worksheet.cell(row=excel_row, column=1).number_format,
