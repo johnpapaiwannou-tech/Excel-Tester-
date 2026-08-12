@@ -695,25 +695,6 @@ if uploaded_file is not None:
             if date_diffs:
                 diffs_only = [d for _, _, _, d in date_diffs]
                 delayed_deals = [item for item in date_diffs if abs(item[3]) > DELAY_LIMIT_DAYS]
-                within_limit_deals = [item for item in date_diffs if abs(item[3]) <= DELAY_LIMIT_DAYS]
-
-                st.caption(
-                    "Η διαφορά υπολογίζεται: 2η πληρωμή − 1η πληρωμή. "
-                    "Θετικός αριθμός = ο 2ος πελάτης πλήρωσε αργότερα, "
-                    "αρνητικός = πλήρωσε νωρίτερα. "
-                    "Στα παρακάτω στατιστικά συμμετέχουν μόνο τα deals που έχουν ημερομηνία "
-                    "και στις δύο στήλες Α και F."
-                )
-
-                limit_col1, limit_col2 = st.columns(2)
-                limit_col1.metric(
-                    f"Εντός ορίου (≤ {DELAY_LIMIT_DAYS} ημ.)",
-                    len(within_limit_deals),
-                )
-                limit_col2.metric(
-                    f"Εκτός ορίου (> {DELAY_LIMIT_DAYS} ημ.)",
-                    len(delayed_deals),
-                )
 
                 if delayed_deals:
                     st.subheader(f"🔴 Deals πάνω από το όριο των {DELAY_LIMIT_DAYS} ημερών")
