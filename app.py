@@ -406,27 +406,38 @@ def extract_debt(text):
 
 # Μετατρέπει ένα κείμενο σε ημερομηνία (αν το βρει), αλλιώς None
 def parse_date(text):
-    # Excel serial number (π.χ. 46174 -> 01/07/2026), περιλαμβάνει numpy τύπους
-    if isinstance(text, (Number, pd.Timestamp)) and not isinstance(text, bool):
+    if pd.isna(text):
+        return None
+
+    # Πραγματικές ημερομηνίες που επιστρέφουν pandas/openpyxl από το Excel.
+    if isinstance(text, datetime):
+        return text.to_pydatetime() if isinstance(text, pd.Timestamp) else text
+
+    # Excel serial number (π.χ. 46174 -> 01/06/2026), περιλαμβάνει numpy τύπους
+    if isinstance(text, Number) and not isinstance(text, bool):
         try:
-            if isinstance(text, pd.Timestamp):
-                return text.to_pydatetime()
             return datetime(1899, 12, 30) + pd.Timedelta(days=float(text))
         except Exception:
             return None
-    if pd.isna(text):
-        return None
+
     s = str(text).strip()
     if not s or s.lower() == "nan":
         return None
     # Γνωστές μορφές (πρώτα το ελληνικό ΗΗ/ΜΜ/ΕΕΕΕ)
-    for fmt in ("%d/%m/%Y", "%d-%m-%Y", "%Y-%m-%d", "%d.%m.%Y"):
+    for fmt in (
+        "%d/%m/%Y",
+        "%d-%m-%Y",
+        "%Y-%m-%d",
+        "%d.%m.%Y",
+        "%d/%m/%Y %H:%M:%S",
+        "%Y-%m-%d %H:%M:%S",
+    ):
         try:
             return datetime.strptime(s, fmt)
         except ValueError:
             continue
     # Fallback: σταθερά ΗΗ/ΜΜ/ΕΕΕΕ (ελληνικό format)
-    m = re.search(r'(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})', s)
+    m = re.search(r'(?<!\d)(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})(?!\d)', s)
     if m:
         d, mo, y = m.groups()
         if len(y) == 2:
@@ -505,7 +516,7 @@ if uploaded_file is not None:
                 # Συλλογή διαφοράς ημερών: 1η ημερομηνία (στήλη Α, αριστερά) -> 2η ημερομηνία (στήλη F, δεξιά)
                 # δηλ. η διαφορά ημερών ανάμεσα στην ημερομηνία του πρώτου πελάτη και του δεύτερου.
                 date_a = parse_date(row.iloc[0])
-                date_f = parse_date(col_f)
+                date_f = parse_date(row.iloc[5])
                 if date_a and date_f:
                     # Θετικό: ο 2ος πελάτης πλήρωσε αργότερα. Αρνητικό: πλήρωσε νωρίτερα.
                     diff_days = (date_f.date() - date_a.date()).days
