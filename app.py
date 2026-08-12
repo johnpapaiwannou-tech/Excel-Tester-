@@ -449,6 +449,26 @@ def parse_date(text):
     return None
 
 
+def parse_excel_date_as_greek(text, number_format=None):
+    """Διαβάζει ημερομηνία Excel όπως εμφανίζεται σε ελληνική μορφή ΗΗ/ΜΜ/ΕΕΕΕ."""
+    parsed = parse_date(text)
+    if not parsed or not number_format:
+        return parsed
+
+    compact_format = re.sub(r'\s+', '', str(number_format).lower())
+    uses_us_order = bool(re.search(r'm{1,4}[/\-.]d{1,4}', compact_format))
+
+    # Σε αρχεία με format mm/dd/yyyy ο χρήστης βλέπει π.χ. 01/07/2026
+    # και το εννοεί ως 1 Ιουλίου. Αντιστρέφουμε μόνο τις αμφίσημες έγκυρες τιμές.
+    if uses_us_order and parsed.month <= 12 and parsed.day <= 12:
+        try:
+            return parsed.replace(month=parsed.day, day=parsed.month)
+        except ValueError:
+            return parsed
+
+    return parsed
+
+
 
 # Upload Αρχείου
 uploaded_file = st.file_uploader("Επιλέξτε αρχείο", type=["csv", "xlsx"])
@@ -457,6 +477,7 @@ if uploaded_file is not None:
     try:
         # Αναγνώριση τύπου αρχείου και φόρτωση
         filename = uploaded_file.name.lower()
+        excel_date_formats = []
         if filename.endswith('.csv'):
             df = pd.read_csv(uploaded_file)
         elif filename.endswith('.xlsx'):
@@ -465,6 +486,20 @@ if uploaded_file is not None:
                     "Για να διαβάσετε .xlsx αρχείο χρειάζεται να εγκαταστήσετε το openpyxl: pip install openpyxl"
                 )
             df = pd.read_excel(uploaded_file, engine='openpyxl')
+
+            # Κρατάμε το format των κελιών Α και F, γιατί το pandas επιστρέφει
+            # μόνο την εσωτερική ημερομηνία και όχι τον τρόπο που φαίνεται στο Excel.
+            uploaded_file.seek(0)
+            workbook = openpyxl.load_workbook(uploaded_file, data_only=True, read_only=True)
+            worksheet = workbook[workbook.sheetnames[0]]
+            excel_date_formats = [
+                (
+                    worksheet.cell(row=excel_row, column=1).number_format,
+                    worksheet.cell(row=excel_row, column=6).number_format,
+                )
+                for excel_row in range(2, len(df) + 2)
+            ]
+            workbook.close()
         else:
             raise ValueError("Μη υποστηριζόμενος τύπος αρχείου. Επιλέξτε csv ή xlsx.")
 
@@ -482,7 +517,7 @@ if uploaded_file is not None:
             pending_messages = []
             date_diffs = []  # (κωδικός, 1η πληρωμή, 2η πληρωμή, πραγματική διαφορά)
 
-            for index, row in df.iterrows():
+            for row_position, (_, row) in enumerate(df.iterrows()):
                 # On-the-fly χαρτογράφηση στηλών με βάση τη θέση τους (0=A, 1=B, 2=C, 3=D, 4=E, 5=F)
                 col_b = str(row.iloc[1]).strip()  # Κωδικός Deal
                 col_c = row.iloc[2]               # Στοιχεία Συναλλαγής 1
@@ -515,8 +550,13 @@ if uploaded_file is not None:
 
                 # Συλλογή διαφοράς ημερών: 1η ημερομηνία (στήλη Α, αριστερά) -> 2η ημερομηνία (στήλη F, δεξιά)
                 # δηλ. η διαφορά ημερών ανάμεσα στην ημερομηνία του πρώτου πελάτη και του δεύτερου.
-                date_a = parse_date(row.iloc[0])
-                date_f = parse_date(row.iloc[5])
+                format_a, format_f = (
+                    excel_date_formats[row_position]
+                    if row_position < len(excel_date_formats)
+                    else (None, None)
+                )
+                date_a = parse_excel_date_as_greek(row.iloc[0], format_a)
+                date_f = parse_excel_date_as_greek(row.iloc[5], format_f)
                 if date_a and date_f:
                     # Θετικό: ο 2ος πελάτης πλήρωσε αργότερα. Αρνητικό: πλήρωσε νωρίτερα.
                     diff_days = (date_f.date() - date_a.date()).days
