@@ -711,11 +711,11 @@ if uploaded_file is not None:
                     )
 
                 col1, col2, col3, col4, col5 = st.columns(5)
-                col1.metric("Πλήθος Deals", len(diffs_only))
-                col2.metric("Μέση Διαφορά", f"{statistics.mean(diffs_only):.1f} ημ.")
-                col3.metric("Διάμεσος", f"{statistics.median(diffs_only):.1f} ημ.")
-                col4.metric("Ελάχιστη", f"{min(diffs_only)} ημ.")
-                col5.metric("Μέγιστη", f"{max(diffs_only)} ημ.")
+                col1.metric("Πλήθος έτοιμων Deals", len(diffs_only))
+                col2.metric("Μέση Διαφορά έτοιμων Deals", f"{statistics.mean(diffs_only):.1f} ημ.")
+                col3.metric("Διάμεσος έτοιμων Deals", f"{statistics.median(diffs_only):.1f} ημ.")
+                col4.metric("Ελάχιστη έτοιμων Deals", f"{min(diffs_only)} ημ.")
+                col5.metric("Μέγιστη έτοιμων Deals", f"{max(diffs_only)} ημ.")
             else:
                 st.info(
                     "Δεν υπάρχουν ολοκληρωμένα deals με ημερομηνία στις στήλες Α και F. "
