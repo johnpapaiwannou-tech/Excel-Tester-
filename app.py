@@ -342,6 +342,57 @@ header,
     box-shadow: 0 0 0 2px rgba(255,255,255,0.25) !important;
 }
 
+/* ==========================================
+   SHEET SELECTOR
+========================================== */
+
+div[data-testid="stSelectbox"] {
+    width: min(100%, 390px) !important;
+    background: rgba(15, 23, 42, 0.60) !important;
+    border: 1px solid rgba(255, 255, 255, 0.30) !important;
+    border-radius: 18px !important;
+    padding: 12px 14px 14px !important;
+    margin: 10px 0 18px !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    transition: background .2s ease, border-color .2s ease;
+}
+
+div[data-testid="stSelectbox"]:hover {
+    background: rgba(15, 23, 42, 0.75) !important;
+    border-color: rgba(255, 255, 255, 0.50) !important;
+}
+
+div[data-testid="stSelectbox"] label {
+    margin-bottom: 4px !important;
+}
+
+div[data-testid="stSelectbox"] label p {
+    color: rgba(255, 255, 255, 0.88) !important;
+    font-size: 0.82rem !important;
+    line-height: 1.25 !important;
+    text-shadow: none !important;
+}
+
+div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {
+    min-height: 38px !important;
+    height: 38px !important;
+    background: rgba(255, 255, 255, 0.10) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+}
+
+div[data-testid="stSelectbox"] div[data-baseweb="select"] * {
+    color: #ffffff !important;
+}
+
+div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:hover {
+    background: rgba(255, 255, 255, 0.16) !important;
+    border-color: rgba(255, 255, 255, 0.40) !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
