@@ -4,6 +4,7 @@ import re
 import os
 import json
 import statistics
+from numbers import Number
 import urllib.request
 import urllib.error
 from datetime import datetime
@@ -406,7 +407,7 @@ def extract_debt(text):
 # Μετατρέπει ένα κείμενο σε ημερομηνία (αν το βρει), αλλιώς None
 def parse_date(text):
     # Excel serial number (π.χ. 46174 -> 01/07/2026), περιλαμβάνει numpy τύπους
-    if isinstance(text, (int, float, pd.Timestamp)) and not isinstance(text, bool):
+    if isinstance(text, (Number, pd.Timestamp)) and not isinstance(text, bool):
         try:
             if isinstance(text, pd.Timestamp):
                 return text.to_pydatetime()
@@ -468,7 +469,7 @@ if uploaded_file is not None:
         else:
             ready_deals = []
             pending_messages = []
-            date_diffs = []  # λίστα από (κωδικός deal, διαφορά ημερών) ανάμεσα στην 1η (στήλη Α) και 2η (στήλη F) ημερομηνία
+            date_diffs = []  # (κωδικός, 1η πληρωμή, 2η πληρωμή, πραγματική διαφορά)
 
             for index, row in df.iterrows():
                 # On-the-fly χαρτογράφηση στηλών με βάση τη θέση τους (0=A, 1=B, 2=C, 3=D, 4=E, 5=F)
@@ -506,8 +507,9 @@ if uploaded_file is not None:
                 date_a = parse_date(row.iloc[0])
                 date_f = parse_date(col_f)
                 if date_a and date_f:
-                    diff_days = abs((date_f - date_a).days)
-                    date_diffs.append((col_b, diff_days))
+                    # Θετικό: ο 2ος πελάτης πλήρωσε αργότερα. Αρνητικό: πλήρωσε νωρίτερα.
+                    diff_days = (date_f.date() - date_a.date()).days
+                    date_diffs.append((col_b, date_a.date(), date_f.date(), diff_days))
 
                 if not row_has_debt and has_amount_d and has_date_f:
                     ready_deals.append(f"🟢 Είναι έτοιμο το deal (**{col_b}**) να μπεί T-Box, έχουν πληρώσει και οι δύο πλευρές")
@@ -540,8 +542,22 @@ if uploaded_file is not None:
             st.subheader("📊 Στατιστικά Διαφοράς Ημερών (1ος vs 2ος πελάτης)")
 
             if date_diffs:
-                diffs_only = [d for _, d in date_diffs]
-                diffs_df = pd.DataFrame(date_diffs, columns=["Κωδικός Deal", "Διαφορά Ημερών"])
+                diffs_only = [d for _, _, _, d in date_diffs]
+                diffs_df = pd.DataFrame(
+                    date_diffs,
+                    columns=[
+                        "Κωδικός Deal",
+                        "Πληρωμή 1ου πελάτη",
+                        "Πληρωμή 2ου πελάτη",
+                        "Διαφορά πληρωμής (ημέρες)",
+                    ],
+                )
+
+                st.caption(
+                    "Η διαφορά υπολογίζεται: 2η πληρωμή − 1η πληρωμή. "
+                    "Θετικός αριθμός = ο 2ος πελάτης πλήρωσε αργότερα, "
+                    "αρνητικός = πλήρωσε νωρίτερα."
+                )
 
                 col1, col2, col3, col4, col5 = st.columns(5)
                 col1.metric("Πλήθος Deals", len(diffs_only))
@@ -552,7 +568,7 @@ if uploaded_file is not None:
 
                 with st.expander("👁️ Δείτε αναλυτικά τη διαφορά ημερών ανά deal"):
                     st.dataframe(
-                        diffs_df.sort_values("Διαφορά Ημερών", ascending=False),
+                        diffs_df.sort_values("Διαφορά πληρωμής (ημέρες)", ascending=False),
                         use_container_width=True,
                         hide_index=True,
                     )
