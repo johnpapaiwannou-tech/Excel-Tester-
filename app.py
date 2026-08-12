@@ -632,7 +632,7 @@ if uploaded_file is not None:
                             col_b,
                             date_a.date(),
                             date_f.date(),
-                            diff_days,
+                            "Στήλη Α → Στήλη F",
                             abs(diff_days),
                             "Ολοκληρωμένο — πληρωμή και από τις δύο πλευρές",
                         )
@@ -645,7 +645,7 @@ if uploaded_file is not None:
                             col_b,
                             date_a.date(),
                             None,
-                            None,
+                            "Στήλη Α → Σήμερα",
                             waiting_days,
                             "Αναμονή 2ης πληρωμής",
                         )
@@ -656,7 +656,7 @@ if uploaded_file is not None:
                             col_b,
                             None,
                             date_f.date() if date_f else None,
-                            None,
+                            "Δεν υπολογίζεται",
                             None,
                             "Δεν υπάρχει έγκυρη ημερομηνία στη στήλη Α",
                         )
@@ -756,8 +756,8 @@ if uploaded_file is not None:
                         "Κωδικός Deal",
                         "Ημερομηνία στήλης Α",
                         "Ημερομηνία στήλης F",
-                        "Διαφορά Α → F (ημέρες)",
-                        "Ημέρες πληρωμής / αναμονής",
+                        "Βάση υπολογισμού",
+                        "Διαφορά ημερών",
                         "Κατάσταση πληρωμής",
                     ],
                 )
@@ -772,16 +772,16 @@ if uploaded_file is not None:
                     return "🟢 Εντός ορίου"
 
                 monitoring_df[f"Έλεγχος ορίου {DELAY_LIMIT_DAYS} ημερών"] = monitoring_df[
-                    "Ημέρες πληρωμής / αναμονής"
+                    "Διαφορά ημερών"
                 ].apply(limit_label)
                 monitoring_df = monitoring_df.sort_values(
-                    "Ημέρες πληρωμής / αναμονής",
+                    "Διαφορά ημερών",
                     ascending=False,
                     na_position="last",
                 )
 
                 def highlight_delay_row(row):
-                    distance_days = row["Ημέρες πληρωμής / αναμονής"]
+                    distance_days = row["Διαφορά ημερών"]
                     if pd.isna(distance_days):
                         style = "background-color: #475569; color: #ffffff; font-weight: 700;"
                     elif distance_days > DELAY_LIMIT_DAYS:
