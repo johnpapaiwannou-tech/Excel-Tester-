@@ -518,6 +518,8 @@ if uploaded_file is not None:
             # --- ΕΜΦΑΝΙΣΗ ΑΠΟΤΕΛΕΣΜΑΤΩΝ ---
             st.markdown("---")
 
+            st.metric("Αριθμός έτοιμων deals", len(ready_deals))
+
             st.subheader("🟢 Έτοιμα για T-Box")
             if ready_deals:
                 for deal in ready_deals:
